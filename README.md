@@ -18,12 +18,12 @@ For example, let's assume we're working in the `mathlib4` directory, with the fo
 
 We can invoke the exporter on the "top level" mathlib file and export mathlib with the following command:
 ```sh
-lake env ../.lake/build/bin/lean4export Mathlib > out.ndjson
+lake env ../lean4export/.lake/build/bin/lean4export Mathlib > out.ndjson
 ```
-This exports the contents of the given Lean module (here just the top level `Mathlib` module in the `Mathlib.lean` file), and its transitive dependencies. A specific list of declarations to be exported from these modules can be given after a separating `--`, and more than one module can be passed to the initial invocation by including more than one name (separted with a space).
+This exports the contents of the given Lean module (here just the top level `Mathlib` module in the `Mathlib.lean` file), and its transitive dependencies. A specific list of declarations to be exported from these modules can be given after a separating `--`, and more than one module can be passed to the initial invocation by including more than one name (separated with a space).
 
 ### Options
 
 The option `--export-unsafe` can be used to include unsafe declarations in the export file. This may be useful for testing and debugging other tools, where unsafe declarations can serve as negative examples.
 
-The option `--export-mdata"` can be used to include `Expr.mdata` items in the export file, which are removed by default as they should not have an effect on type checking.
+The option `--export-mdata` can be used to include `Expr.mdata` items in the export file, which are removed by default as they should not have an effect on type checking.

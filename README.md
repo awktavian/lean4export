@@ -24,6 +24,8 @@ This exports the contents of the given Lean module (here just the top level `Mat
 
 ### Options
 
-The option `--export-unsafe` can be used to include unsafe declarations in the export file. This may be useful for testing and debugging other tools, where unsafe declarations can serve as negative examples.
+The option `--export-unsafe` can be used to include unsafe and partial declarations in the export file, which are omitted by default. This may be useful for testing and debugging other tools, where unsafe or partial declarations can serve as negative examples.
 
 The option `--export-mdata` can be used to include `Expr.mdata` items in the export file, which are removed by default as they should not have an effect on type checking.
+
+The option `--ignore-missing` can be used to skip constants that are not found in the imported environment, rather than panicking.

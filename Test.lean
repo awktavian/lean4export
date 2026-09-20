@@ -283,6 +283,32 @@ meta def runParserTest (dump : M Unit) : MetaM Unit := do
   let env ← Export.parseStream stream
   env.constOrder.forM fun n => IO.println n
 
+def runMdataParserTests : IO Unit := do
+  let bufferRef ← IO.mkRef {data := .empty, pos := 0}
+  let stream := IO.FS.Stream.ofBuffer bufferRef
+  let emptyData := Json.mkObj [
+    ("expr", (0 : Json)),
+    ("data", Json.mkObj [])
+  ]
+  let (emptyExpr, _) ← Export.Parse.M.run (do
+    modify fun s => { s with exprMap := s.exprMap.insert 0 (.sort .zero) }
+    Export.Parse.parseExprMdata emptyData) stream
+  unless emptyExpr == .mdata {} (.sort .zero) do
+    throw <| IO.userError "empty Expr.mdata did not round-trip"
+
+  let nonemptyData := Json.mkObj [
+    ("expr", (0 : Json)),
+    ("data", Json.mkObj [("synthetic", "value")])
+  ]
+  try
+    let _ ← Export.Parse.M.run (Export.Parse.parseExprMdata nonemptyData) stream
+    throw <| IO.userError "nonempty Expr.mdata was accepted lossy"
+  catch e =>
+    unless e.toString.contains "cannot be reconstructed" do
+      throw e
+
+#eval runMdataParserTests
+
 
 /--
 info: List

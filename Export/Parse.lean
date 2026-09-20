@@ -223,10 +223,16 @@ def parseExprStrLit (json : Json) : M Expr := do
 def parseExprMdata (json : Json) : M Expr := do
   let .obj data := json | fail s!"Expr.mdata invalid"
   let some (.num (exprIdx : Nat)) := data["expr"]? | fail s!"Expr.mdata invalid"
-  let some (.obj _dataObj) := data["data"]? | fail s!"Expr.mdata invalid"
+  let some (.obj dataObj) := data["data"]? | fail s!"Expr.mdata invalid"
+
+  -- `KVMap.toJson` currently serializes each `DataValue` with `reprStr`.
+  -- That representation is not invertible in general, so accepting a
+  -- nonempty object here and replacing it with `{}` silently changes the
+  -- expression. Fail closed until the wire format carries typed values.
+  unless dataObj.isEmpty do
+    fail "nonempty Expr.mdata cannot be reconstructed from this export format"
   let expr ← getExpr exprIdx
 
-  -- TODO: Unclear how to perfectly recover with the current output format
   return .mdata {} expr
 
 def getNameList (idxs : Array Json) : M (List Name) := do
